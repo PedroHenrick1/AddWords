@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using AddWords.Services;
+using System.ComponentModel.DataAnnotations.Schema;
+using static BCrypt.Net.BCrypt;
 
 namespace AddWords.Model
 {
     [Table("users")]
-    public class User
+    public class User : IHashedPassword
     {
         [Column("Id")]
         public int Id { get; set; }
@@ -14,5 +16,10 @@ namespace AddWords.Model
         [Column("Senha")]
         public string Senha { get; set; }
 
+        public string HashedPassword(string password, int factor)
+        {
+            var hash = HashPassword(password, factor);
+            return hash;
+        }
     }
 }

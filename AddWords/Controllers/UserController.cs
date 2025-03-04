@@ -1,5 +1,6 @@
 ﻿using AddWords.Data;
 using AddWords.Model;
+using AddWords.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,8 @@ namespace AddWords.Controllers
         [HttpPost]
         public async Task <ActionResult<User>> PostUser (User user)
         {
+            var hashPassword = user.HashedPassword(user.Senha);
+            user.Senha = hashPassword;
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
