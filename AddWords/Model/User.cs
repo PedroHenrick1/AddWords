@@ -16,9 +16,11 @@ namespace AddWords.Model
         [Column("Senha")]
         public string Senha { get; set; }
 
-        public string HashedPassword(string password, int factor)
+        private int Factor = 12;
+
+        public string HashedPassword(string password)
         {
-            var hash = HashPassword(password, factor);
+            var hash = HashPassword(password, Factor);
             return hash;
         }
     }
