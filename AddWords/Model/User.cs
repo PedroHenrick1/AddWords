@@ -1,19 +1,18 @@
 ﻿using AddWords.Services;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Net.Mail;
+using System.Text.RegularExpressions;
 using static BCrypt.Net.BCrypt;
 
 namespace AddWords.Model
 {
-    [Table("users")]
-    public class User : IHashedPassword
+    public class User : IValidationUser
     {
-        [Column("Id")]
+        [Key]
         public int Id { get; set; }
-        [Column("Nome")]
         public string Nome { get; set; }
-        [Column("Email")]
         public string Email { get; set; }
-        [Column("Senha")]
         public string Senha { get; set; }
 
         private int Factor = 12;
@@ -22,6 +21,20 @@ namespace AddWords.Model
         {
             var hash = HashPassword(password, Factor);
             return hash;
+        }
+
+        public bool ValidateEmail(string email)
+        {
+            Regex strModelo = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+
+            Match match = strModelo.Match(email);
+
+            if (match.Success)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

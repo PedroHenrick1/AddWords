@@ -27,12 +27,17 @@ namespace AddWords.Controllers
         [HttpPost]
         public async Task <ActionResult<User>> PostUser (User user)
         {
-            var hashPassword = user.HashedPassword(user.Senha);
-            user.Senha = hashPassword;
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            if (user.ValidateEmail(user.Email) && user.Email != null)
+            {
+                var hashPassword = user.HashedPassword(user.Senha);
+                user.Senha = hashPassword;
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
+                return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, User);
+            }
 
-            return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, User);
+            return BadRequest("Email inválido");
+
         }
 
         [HttpPut("{id}")]

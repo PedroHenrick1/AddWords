@@ -1,7 +1,8 @@
 ﻿namespace AddWords.Services
 {
-    public interface IHashedPassword
+    public interface IValidationUser
     {
         public string HashedPassword(string password);
+        public bool ValidateEmail(string email);
     }
 }
