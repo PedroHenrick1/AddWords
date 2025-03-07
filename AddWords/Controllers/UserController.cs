@@ -1,6 +1,7 @@
 ﻿using AddWords.Data;
 using AddWords.Model;
 using AddWords.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,9 +16,9 @@ namespace AddWords.Controllers
         public UserController(UserContext context) 
         {
             _context = context;
-            Console.WriteLine(_context);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()
         {
@@ -27,12 +28,15 @@ namespace AddWords.Controllers
         [HttpPost]
         public async Task <ActionResult<User>> PostUser (User user)
         {
-            if (user.ValidateEmail(user.Email) && user.Email != null)
+            var User = new UserService();
+
+            if (User.ValidateEmail(user.Email) && user.Email != null)
             {
-                var hashPassword = user.HashedPassword(user.Senha);
+                var hashPassword = User.HashedPassword(user.Senha);
                 user.Senha = hashPassword;
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+
                 return CreatedAtAction(nameof(GetUsers), new { id = user.Id }, User);
             }
 
@@ -40,6 +44,7 @@ namespace AddWords.Controllers
 
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user) 
         {
@@ -69,6 +74,7 @@ namespace AddWords.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {

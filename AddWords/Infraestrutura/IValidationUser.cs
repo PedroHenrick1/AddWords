@@ -1,4 +1,4 @@
-﻿namespace AddWords.Services
+﻿namespace AddWords.Infraestrutura
 {
     public interface IValidationUser
     {
