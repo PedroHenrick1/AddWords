@@ -38,7 +38,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var configuration = builder.Configuration;
-builder.Services.AddDbContext<UserContext>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
 
 var key = Encoding.ASCII.GetBytes(AddWords.Key.Secret);

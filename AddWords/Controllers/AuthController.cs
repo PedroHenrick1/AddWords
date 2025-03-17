@@ -12,9 +12,9 @@ namespace AddWords.Controllers
     public class AuthController : Controller
     {
 
-        private readonly UserContext _context;
+        private readonly AppDbContext _context;
 
-        public AuthController(UserContext context)
+        public AuthController(AppDbContext context)
         {
             _context = context;
         }
