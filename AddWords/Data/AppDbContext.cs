@@ -11,6 +11,8 @@ namespace AddWords.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Words> Words { get; set; }
+        public DbSet<Translations> Translations { get; set; }
+
 
     }
 }

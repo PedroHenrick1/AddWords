@@ -2,6 +2,7 @@
 using AddWords.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AddWords.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class UserContextModelSnapshot : ModelSnapshot
+    [Migration("20250326215747_RelacionamentosConsertados")]
+    partial class RelacionamentosConsertados
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,12 +111,17 @@ namespace AddWords.Migrations
             modelBuilder.Entity("AddWords.Model.Words", b =>
                 {
                     b.HasOne("AddWords.Model.User", "user")
-                        .WithMany()
+                        .WithMany("Words")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("user");
+                });
+
+            modelBuilder.Entity("AddWords.Model.User", b =>
+                {
+                    b.Navigation("Words");
                 });
 
             modelBuilder.Entity("AddWords.Model.Words", b =>

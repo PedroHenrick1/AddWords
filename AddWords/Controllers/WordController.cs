@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
+using AddWords.Controllers;
 using AddWords.Data;
+using AddWords.Dtos;
 using AddWords.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,11 +38,34 @@ namespace AddWords.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<Words>>> PostWord(Words word, string translation)
+        public async Task<ActionResult<IEnumerable<Words>>> PostWord(WordCreateDTO word)
         {
-            word.UserId = ReturnUserIdToken();
-            var newTranslation = 
-            await _context.Add(word);
+            try 
+            {
+                var newWord = new Words()
+                {
+                    Name = word.Name
+                };
+
+                var translations = word.Translation.Select(c => new Translations
+                {
+                    Name = c.Name,
+                    Context = c.Context,
+                    Words = newWord
+                }).ToList();
+
+                newWord.Translations = translations;
+
+                _context.Words.Add(newWord);
+
+                return Ok(await _context.Words.Include(e => e.Translations).ToListAsync());
+            }
+            catch
+            {
+                return BadRequest("Erro desconhecido");
+            }
+
+
         }
 
         private int ReturnUserIdToken()
