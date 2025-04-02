@@ -27,10 +27,30 @@ namespace AddWords.Controllers
             try
             {
                 int UserIdToken = ReturnUserIdToken();
-                return await _context.Words.Where(c => c.UserId.Equals(UserIdToken)).ToListAsync();
+                Console.WriteLine("Token: " + UserIdToken);
+                return await _context.Words.Include(e => e.Translations).Where(c => c.UserId.Equals(UserIdToken)).ToListAsync();
             }
-            catch (Exception) 
+            catch (Exception e) 
             {
+                Console.WriteLine(e);
+                throw new Exception("Erro desconhecido");
+
+            }
+
+        }
+
+        [Authorize]
+        [HttpGet("{word}")]
+        public async Task<ActionResult<IEnumerable<Words>>> GetWordsByName(string word)
+        {
+            try
+            {
+                int UserIdToken = ReturnUserIdToken();
+                return await _context.Words.Include(e => e.Translations).Where(c => c.UserId.Equals(UserIdToken)).Where(c => c.Name.ToLower().Contains(word.ToLower())).ToListAsync();
+            }
+            catch (Exception e) 
+            {
+                Console.WriteLine(e);
                 throw new Exception("Erro desconhecido");
             }
 
@@ -42,9 +62,12 @@ namespace AddWords.Controllers
         {
             try 
             {
-                var newWord = new Words()
+                int userIdToken = ReturnUserIdToken();
+
+                var newWord = new Words
                 {
-                    Name = word.Name
+                    Name = word.Name,
+                    UserId = userIdToken
                 };
 
                 var translations = word.Translation.Select(c => new Translations
@@ -56,7 +79,9 @@ namespace AddWords.Controllers
 
                 newWord.Translations = translations;
 
+
                 _context.Words.Add(newWord);
+                await _context.SaveChangesAsync();
 
                 return Ok(await _context.Words.Include(e => e.Translations).ToListAsync());
             }
@@ -71,7 +96,6 @@ namespace AddWords.Controllers
         private int ReturnUserIdToken()
         {
             var identity = HttpContext.User.Identity as ClaimsIdentity;
-            var idUser = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
 
             return Int32.Parse(identity.FindFirst("userId").Value);
         }

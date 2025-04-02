@@ -7,11 +7,12 @@ namespace AddWords.Model
 {
     public class User
     {
-        [Key]
-        [JsonIgnore]
         public int Id { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }
+        [JsonIgnore]
+
+        public List<Words> Words { get; set; } = new List<Words>();
     }
 }

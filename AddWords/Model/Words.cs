@@ -5,8 +5,7 @@ namespace AddWords.Model
 {
     public class Words
     {
-        [Key]
-        public int IdWord { get; set; }
+        public int Id { get; set; }
         public int UserId { get; set; }
         public string Name { get; set; }
         public List<Translations> Translations { get; set; }
