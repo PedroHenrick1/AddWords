@@ -30,7 +30,7 @@ namespace AddWords.Controllers
                 Console.WriteLine("Token: " + UserIdToken);
                 return await _context.Words.Include(e => e.Translations).Where(c => c.UserId.Equals(UserIdToken)).ToListAsync();
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw new Exception("Erro desconhecido");
@@ -48,7 +48,7 @@ namespace AddWords.Controllers
                 int UserIdToken = ReturnUserIdToken();
                 return await _context.Words.Include(e => e.Translations).Where(c => c.UserId.Equals(UserIdToken)).Where(c => c.Name.ToLower().Contains(word.ToLower())).ToListAsync();
             }
-            catch (Exception e) 
+            catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw new Exception("Erro desconhecido");
@@ -60,7 +60,7 @@ namespace AddWords.Controllers
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Words>>> PostWord(WordCreateDTO word)
         {
-            try 
+            try
             {
                 int userIdToken = ReturnUserIdToken();
 
@@ -91,6 +91,42 @@ namespace AddWords.Controllers
             }
 
 
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteWord(int id)
+        {
+            var word = await _context.Words.FindAsync(id);
+            var idUser = ReturnUserIdToken();
+
+            if (word == null || idUser != word.UserId)
+            {
+                return NotFound();
+            }
+
+            _context.Words.Remove(word);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [Authorize]
+        [HttpDelete("{name}")]
+        public async Task<IActionResult> DeleteWordByName(string name)
+        {
+            var word = await _context.Words.Where(e => e.Name.Equals(name)).FirstAsync();
+            var idUser = ReturnUserIdToken();
+
+            if (word == null || idUser != word.UserId)
+            {
+                return NotFound();
+            }
+
+            _context.Words.Remove(word);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
         private int ReturnUserIdToken()
