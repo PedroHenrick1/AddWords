@@ -94,7 +94,7 @@ namespace AddWords.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:int}")]
         public async Task<IActionResult> DeleteWord(int id)
         {
             var word = await _context.Words.FindAsync(id);
@@ -112,7 +112,7 @@ namespace AddWords.Controllers
         }
 
         [Authorize]
-        [HttpDelete("{name}")]
+        [HttpDelete("by-name/{name}")]
         public async Task<IActionResult> DeleteWordByName(string name)
         {
             var word = await _context.Words.Where(e => e.Name.Equals(name)).FirstAsync();
@@ -124,6 +124,36 @@ namespace AddWords.Controllers
             }
 
             _context.Words.Remove(word);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        
+        [Authorize]
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> PutWord(int id, WordCreateDTO wordContent)
+        {
+            var word = await _context.Words.Include(w => w.Translations).FirstOrDefaultAsync(w => w.Id == id);
+            var idUser = ReturnUserIdToken();
+            
+            
+            if (word == null || idUser != word.UserId)
+            {
+                return NotFound();
+            }
+            word.Name = wordContent.Name;
+            
+            word.Translations.Clear();
+
+            foreach (var tr in wordContent.Translation)
+            {
+                word.Translations.Add(new Translations
+                {
+                    Name = tr.Name,
+                    Context = tr.Context
+                });
+            }
+            
             await _context.SaveChangesAsync();
 
             return NoContent();
