@@ -1,0 +1,6 @@
+services:
+  addwords:
+    image: ${DOCKER_REGISTRY-}addwords
+    build:
+      context: .
+      dockerfile: AddWords/Dockerfile

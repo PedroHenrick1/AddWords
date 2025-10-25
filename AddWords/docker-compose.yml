@@ -1,0 +1,32 @@
+services:
+  api:
+    container_name: addwords_api
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - "4000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - add-words-db
+    networks:
+      - addwords_network
+
+  add-words-db:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: senha123
+    volumes:
+      - addwords-api-postgres:/var/lib/postgresql/data
+    networks:
+      addwords_network:
+        aliases:
+          - db_postgres
+
+volumes:
+  addwords-api-postgres:
+
+networks:
+  addwords_network:
+    driver: bridge
