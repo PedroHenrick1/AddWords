@@ -1,4 +1,4 @@
-services:
+﻿services:
   api:
     container_name: addwords_api
     build:
@@ -8,21 +8,25 @@ services:
       - "4000:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db_postgres;Port=5432;Database=addwords;Username=postgres;Password=senha123
     depends_on:
-      - add-words-db
+      - postgres
     networks:
-      - addwords_network
+      addwords_network: {}
 
-  add-words-db:
+  postgres:
     image: postgres
     environment:
       POSTGRES_PASSWORD: senha123
+      POSTGRES_DB: addwords
+    ports:
+      - "5432:5432"
     volumes:
       - addwords-api-postgres:/var/lib/postgresql/data
     networks:
       addwords_network:
         aliases:
-          - db_postgres
+          - db_postgres 
 
 volumes:
   addwords-api-postgres:
